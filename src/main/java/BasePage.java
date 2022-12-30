@@ -1,6 +1,7 @@
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.*;
 
 import java.io.File;
@@ -22,11 +23,13 @@ public class BasePage {
     private WebDriver driver;
     private static JavascriptExecutor js;
     private WebDriverWait wait;
+    private static Actions actions;
 
     public BasePage(final WebDriver driver) {
         setDriver(driver);
         wait = new WebDriverWait(driver, Duration.ofSeconds(DEFAULT_TIMEOUT_DURATION));
         js = (JavascriptExecutor) getDriver();
+        actions = new Actions(driver);
     }
 
     public void waitFor(final int milliseconds) {
@@ -43,7 +46,7 @@ public class BasePage {
         try {
             for (final WebElement element : elements) {
                 if (element.getText().equalsIgnoreCase(text)) {
-                    foundElement =  element;
+                    foundElement = element;
                     break;
                 }
             }
@@ -83,7 +86,7 @@ public class BasePage {
 
     public boolean isElementPresent(final By locator, final int duration) {
         try {
-            waitUntil(ExpectedConditions.visibilityOf(getDriver().findElement(locator)),duration);
+            waitUntil(ExpectedConditions.visibilityOf(getDriver().findElement(locator)), duration);
             return true;
         } catch (NoSuchElementException | WebDriverException e) {
             return false;
@@ -207,12 +210,13 @@ public class BasePage {
     }
 
     public String getAttribute(final WebElement element, final String attributeName) {
+        String attribute = null;
         try {
-            String attribute = element.getAttribute(attributeName);
+            attribute = element.getAttribute(attributeName);
         } catch (WebDriverException e) {
             log.error(e.getLocalizedMessage());
         }
-        return attributeName;
+        return attribute;
     }
 
     public boolean isAttributePresentForElement(final String attribute, final WebElement element) {
@@ -246,6 +250,10 @@ public class BasePage {
         return getDriver().getCurrentUrl();
     }
 
-
-
+    public void clickWithOffset(final WebElement element) {
+        final Dimension webElementSize = element.getSize();
+        final int xCenter = webElementSize.getWidth() / 2;
+        final int yCenter = webElementSize.getHeight() / 2;
+        actions.moveToElement(element, xCenter, yCenter).click().perform();
+    }
 }
