@@ -1,3 +1,5 @@
+package org.egeiper;
+@SuppressWarnings("PMD.FieldNamingConventions")
 public enum DatePatterns {
     DD_MM_YYYY("dd/MM/yyyy"),
     MM_DD_YYYY("MM-dd-yyyy"),

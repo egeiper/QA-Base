@@ -1,3 +1,5 @@
+package org.egeiper;
+
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.*;
@@ -11,6 +13,7 @@ import java.util.NoSuchElementException;
 
 @Data
 @Slf4j
+@SuppressWarnings("PMD.GodClass")
 public class BasePage {
     private static final String ERROR_MESSAGE = "Wasn't able to wait";
     private static final String NO_MATCH_FOUND = "No match found";
@@ -21,9 +24,9 @@ public class BasePage {
     private static final String CLASS = "class";
     private static final int DEFAULT_TIMEOUT_DURATION = 20;
     private WebDriver driver;
-    private static JavascriptExecutor js;
+    private JavascriptExecutor js;
     private WebDriverWait wait;
-    private static Actions actions;
+    private Actions actions;
 
     public BasePage(final WebDriver driver) {
         setDriver(driver);
@@ -42,19 +45,20 @@ public class BasePage {
     }
 
     public WebElement findElementWithText(final List<WebElement> elements, final String text) {
-        WebElement foundElement = null;
+
         try {
+            WebElement foundElement;
             for (final WebElement element : elements) {
                 if (element.getText().equalsIgnoreCase(text)) {
                     foundElement = element;
-                    break;
+                    return foundElement;
                 }
             }
         } catch (NoSuchElementException | WebDriverException e) {
-            log.error(e.getClass().getCanonicalName().equals("NoSuchElementException") ? NO_SUCH_ELEMENT : WEB_DRIVER_EXCEPTION);
+            log.error(e.getClass().getCanonicalName().equals(NO_SUCH_ELEMENT)
+                    ? NO_SUCH_ELEMENT : WEB_DRIVER_EXCEPTION);
         }
-        log.info(NO_MATCH_FOUND);
-        return foundElement;
+        return null;
     }
 
     public boolean isElementPresent(final WebElement element) {
@@ -97,7 +101,7 @@ public class BasePage {
         try {
             waitUntil(ExpectedConditions.visibilityOfAllElements(elements));
             return true;
-        } catch (WebDriverException | java.util.NoSuchElementException e) {
+        } catch (WebDriverException | NoSuchElementException e) {
             return false;
         }
     }
@@ -106,26 +110,30 @@ public class BasePage {
         try {
             waitUntil(ExpectedConditions.visibilityOfAllElements(getDriver().findElements(locator)));
             return true;
-        } catch (WebDriverException | java.util.NoSuchElementException e) {
+        } catch (WebDriverException | NoSuchElementException e) {
             return false;
         }
     }
 
-    public void waitUntil(ExpectedCondition<?> expectedCondition, final int duration) {
+    public void waitUntil(final ExpectedCondition<?> expectedCondition, final int duration) {
         waitCondition(duration).until(expectedCondition);
     }
 
-    public void waitUntil(ExpectedCondition<?> expectedCondition) {
+    public void waitUntil(final ExpectedCondition<?> expectedCondition) {
         waitCondition(DEFAULT_TIMEOUT_DURATION).until(expectedCondition);
     }
 
     public Wait<WebDriver> waitCondition(final int duration) {
-        return new FluentWait<>(getDriver()).pollingEvery(Duration.ofMillis(250)).withTimeout(Duration.ofSeconds(duration)).ignoring(NoSuchElementException.class, WebDriverException.class);
+        return new FluentWait<>(getDriver())
+                .pollingEvery(Duration.ofMillis(250))
+                        .withTimeout(Duration.ofSeconds(duration))
+                                .ignoring(NoSuchElementException.class, WebDriverException.class);
     }
 
     private WebElement centerElement(final WebElement element) {
 
-        String scrollElementIntoMiddle = "var viewPortHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"
+        final String scrollElementIntoMiddle = "var viewPortHeight = "
+                + "Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"
                 + "var elementTop = arguments[0].getBoundingClientRect().top;"
                 + "window.scrollBy(0, elementTop-(viewPortHeight/2));";
 
@@ -137,7 +145,8 @@ public class BasePage {
         try {
             centerElement(element).click();
         } catch (StaleElementReferenceException | NoSuchElementException e) {
-            log.error(e.getClass().getCanonicalName().equals("NoSuchElementException") ? NO_SUCH_ELEMENT : STALE_ELEMENT_EXCEPTION);
+            log.error(e.getClass().getCanonicalName()
+                    .equals(NO_SUCH_ELEMENT) ? NO_SUCH_ELEMENT : STALE_ELEMENT_EXCEPTION);
         }
     }
 
@@ -145,7 +154,8 @@ public class BasePage {
         try {
             getDriver().findElement(locator).click();
         } catch (StaleElementReferenceException | NoSuchElementException e) {
-            log.error(e.getClass().getCanonicalName().equals("NoSuchElementException") ? NO_SUCH_ELEMENT : STALE_ELEMENT_EXCEPTION);
+            log.error(e.getClass().getCanonicalName().equals(NO_SUCH_ELEMENT)
+                    ? NO_SUCH_ELEMENT : STALE_ELEMENT_EXCEPTION);
         }
     }
 
@@ -167,11 +177,12 @@ public class BasePage {
     }
 
     public void scrollPage(final Integer y) {
-        js.executeScript("windows.scrollBy(0," + y.toString() + "");
+        final String script = String.format("windows.scrollBy(0,%s)", y);
+        js.executeScript(script);
     }
 
     public void scrollDownToPage() {
-        js.executeScript("windows.scrollBy(0,1000");
+        js.executeScript("windows.scrollBy(0,1000)");
     }
 
     public void acceptAlert() {
@@ -184,7 +195,9 @@ public class BasePage {
     }
 
     public void waitForJQueryToBeFinished() {
-        waitUntil((ExpectedCondition<Boolean>) driver -> js.executeScript("return !!window.jQuery && window.jQuery.active == 0").equals(true));
+        waitUntil((ExpectedCondition<Boolean>) driver ->
+                js.executeScript("return !!window.jQuery && window.jQuery.active == 0")
+                        .equals(true));
     }
 
     public void selectByText(final WebElement element, final String text) {
@@ -210,13 +223,15 @@ public class BasePage {
     }
 
     public String getAttribute(final WebElement element, final String attributeName) {
-        String attribute = null;
+        final String attribute;
         try {
             attribute = element.getAttribute(attributeName);
+            return attribute;
+
         } catch (WebDriverException e) {
             log.error(e.getLocalizedMessage());
         }
-        return attribute;
+        return null;
     }
 
     public boolean isAttributePresentForElement(final String attribute, final WebElement element) {

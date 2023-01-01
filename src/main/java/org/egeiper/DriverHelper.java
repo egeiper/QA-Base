@@ -1,16 +1,18 @@
+package org.egeiper;
+
 import org.openqa.selenium.WebDriver;
 
-public class WebDriverManager {
+public final class DriverHelper {
 
     private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
 
-    private WebDriverManager() {
+    private DriverHelper() {
     }
     public static WebDriver getDriver() {
         return driver.get();
     }
 
     public static void setDriver(final WebDriver driver) {
-        WebDriverManager.driver.set(driver);
+        DriverHelper.driver.set(driver);
     }
 }

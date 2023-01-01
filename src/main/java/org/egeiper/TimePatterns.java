@@ -1,3 +1,5 @@
+package org.egeiper;
+
 public enum TimePatterns {
 
     HH_MM("HH:mm"),

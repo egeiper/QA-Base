@@ -1,4 +1,4 @@
-package util;
+package org.egeiper.util;
 
 
 import org.aeonbits.owner.Config;
