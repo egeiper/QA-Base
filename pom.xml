@@ -6,7 +6,7 @@
 
     <groupId>org.egeiper.qaBase</groupId>
     <artifactId>QA-base</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.5</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
