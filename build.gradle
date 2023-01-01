@@ -11,12 +11,18 @@ plugins {
     id "com.github.spotbugs" version "5.0.13"
     id 'pmd'
     id 'checkstyle'
+    id 'maven-publish'
 }
 
 group 'org.egeiper.qaBase'
-version '1.0.5'
+version '1.0.6'
 repositories {
     mavenCentral()
+}
+
+java {
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
 }
 
 
@@ -45,10 +51,14 @@ checkstyle {
     configFile = rootProject.file('config/checkstyle.xml')
 }
 
+publishing {
+    publications {
+        myLibrary(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
 test {
     useTestNG()
 }
-
-
-
-

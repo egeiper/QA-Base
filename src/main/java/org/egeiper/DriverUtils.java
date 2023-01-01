@@ -28,7 +28,7 @@ public final class DriverUtils {
 
     private static final String CHROME_PROPERTY = "webdriver.chrome.driver";
     private static final String FIREFOX_PROPERTY = "webdriver.gecko.driver";
-    private static final String CONFIG_PROPERTY = "config.properties";
+    private static final String CONFIG_PROPERTY = "resources/config.properties";
     private static final String FILE_DOWNLOAD_PATH = "//src//test//resources//fileDownload";
     private static final ConfigReader CONFIG_READER = ConfigFactory.create(ConfigReader.class, System.getProperties());
     private static final String HUB_URL = String.format("http://%s:%s/wd/hub",
