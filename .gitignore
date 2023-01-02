@@ -1,3 +1,4 @@
 # Project exclude paths
 /target/
 .allure-results
+src/test

@@ -45,7 +45,6 @@ public class BasePage {
     }
 
     public WebElement findElementWithText(final List<WebElement> elements, final String text) {
-
         try {
             WebElement foundElement;
             for (final WebElement element : elements) {
@@ -131,7 +130,6 @@ public class BasePage {
     }
 
     private WebElement centerElement(final WebElement element) {
-
         final String scrollElementIntoMiddle = "var viewPortHeight = "
                 + "Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"
                 + "var elementTop = arguments[0].getBoundingClientRect().top;"
