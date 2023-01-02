@@ -149,7 +149,7 @@ public final class DriverUtils {
         try {
             return RestAssured.given().baseUri(HUB_ENDPOINT).get().getStatusCode() == 200;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return false;
         }
     }
 
