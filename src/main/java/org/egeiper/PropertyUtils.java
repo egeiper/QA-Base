@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public final class PropertyUtils {
     private static final String EXCEPTION_MESSAGE = "Invalid property key or resource file";
-    private static final String RESOURCE_DIRECTORY = System.getProperty("user.dir")+"/src/main/resources/";
+    private static final String RESOURCE_DIRECTORY = System.getProperty("user.dir") + "/src/main/resources/";
     private PropertyUtils() {
     }
 
