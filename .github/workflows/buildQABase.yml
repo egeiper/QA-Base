@@ -1,5 +1,14 @@
 name: Build QA Base
 
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build Project
