@@ -44,6 +44,7 @@ pmd {
     toolVersion = "6.21.0"
     rulesMinimumPriority = 5
     ruleSetConfig = rootProject.resources.text.fromFile("config/pmdRules.xml")
+    ruleSets = []
 }
 
 checkstyle {
