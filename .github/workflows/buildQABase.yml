@@ -28,6 +28,7 @@ jobs:
 
   allure:
     name: Generate Allure Report
+    needs : build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -60,6 +61,7 @@ jobs:
           PUBLISH_DIR: allure-history
   docker:
     runs-on: ubuntu-latest
+    needs : build
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
