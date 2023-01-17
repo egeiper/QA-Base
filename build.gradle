@@ -14,8 +14,8 @@ plugins {
     id 'maven-publish'
 }
 
-group 'org.egeiper.qaBase'
-version '1.0.7'
+group 'org.egeiper'
+version '1.0.9'
 repositories {
     mavenCentral()
 }
@@ -37,6 +37,7 @@ dependencies {
     implementation 'org.aeonbits.owner:owner:1.0.12'
     implementation 'org.seleniumhq.selenium:selenium-chrome-driver:4.7.2'
     implementation 'org.seleniumhq.selenium:selenium-firefox-driver:4.7.2'
+    implementation 'com.amazonaws:aws-java-sdk:1.12.385'
 }
 
 pmd {
@@ -52,17 +53,32 @@ checkstyle {
     configFile = rootProject.file('config/checkstyle.xml')
 }
 
+
+boolean areKeysDefined() {
+    return project.hasProperty("accessKey") && project.hasProperty("secretKey")
+}
+
 publishing {
-    publications {
-        myLibrary(MavenPublication) {
-            from components.java
+    if (areKeysDefined()) {
+        repositories {
+            maven {
+                    url "s3://maven.egeiper"
+                    credentials(AwsCredentials) {
+                        accessKey = project.getProperty("accessKey")
+                        secretKey = project.getProperty("secretKey")
+                    }
+                    publications {
+                        mavenJava(MavenPublication) {
+                            from components.java
+                        }
+                    }
+                }
+            }
         }
     }
-}
+
 
 test {
     useTestNG()
     maxParallelForks = Runtime.runtime.availableProcessors()
 }
-
-
