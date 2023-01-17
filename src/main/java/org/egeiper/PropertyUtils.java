@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Properties;
+@SuppressWarnings("PMD.SystemPrintln")
+
 public final class PropertyUtils {
     private static final String EXCEPTION_MESSAGE = "Invalid property key or resource file";
     private PropertyUtils() {
