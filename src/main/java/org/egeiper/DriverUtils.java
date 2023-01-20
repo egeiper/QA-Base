@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import static org.awaitility.Awaitility.await;
 
 @SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "PMD.AvoidCatchingGenericException",
-        "checkstyle:ClassDataAbstractionCoupling"})
+        "checkstyle:ClassDataAbstractionCoupling", "checkstyle:ReturnCount"})
 public final class DriverUtils {
 
     private static final String CHROME_PROPERTY = "webdriver.chrome.driver";
@@ -42,14 +42,12 @@ public final class DriverUtils {
     }
 
     public static WebDriver getDriver(final DriverType driverType, final BrowserType browserType) {
-        switch (driverType) {
-            case LOCAL:
-                return getLocalDriver(browserType);
-            case REMOTE:
-                return getRemoteDriver(browserType);
-            default:
-                throw new UnknownBrowserException(DRIVER_EXCEPTION);
-
+        if (driverType.equals(DriverType.LOCAL)) {
+            return getLocalDriver(browserType);
+        } else if (driverType.equals(DriverType.REMOTE)) {
+            return getRemoteDriver(browserType);
+        } else {
+            return getRemoteDriverWithHub(browserType);
         }
     }
 
@@ -91,6 +89,17 @@ public final class DriverUtils {
     }
 
     private static RemoteWebDriver getRemoteDriver(final BrowserType browserType) {
+        switch (browserType) {
+            case CHROME:
+                return new RemoteWebDriver(getRemoteURL(), getChromeOptions());
+            case FIREFOX:
+                return new RemoteWebDriver(getRemoteURL(), getFirefoxOptions());
+            default:
+                throw new UnknownBrowserException(DRIVER_EXCEPTION);
+        }
+    }
+
+    private static RemoteWebDriver getRemoteDriverWithHub(final BrowserType browserType) {
         startHubAndNode();
         switch (browserType) {
             case CHROME:
@@ -113,10 +122,10 @@ public final class DriverUtils {
     private static void startHubAndNode() {
         try {
             if (!isHubUp()) {
-                new ProcessBuilder(new String[]{"/bin/bash", "-c", startHubCommand(), "with", "args"}).start();
+                new ProcessBuilder("/bin/bash", "-c", startHubCommand(), "with", "args").start();
             }
             if (!isHubReady()) {
-                new ProcessBuilder(new String[]{"/bin/bash", "-c", startNodeCommand(), "with", "args"}).start();
+                new ProcessBuilder("/bin/bash", "-c", startNodeCommand(), "with", "args").start();
             }
         } catch (IOException e) {
             throw new RuntimeException("Could not start hub or node", e);
@@ -132,13 +141,13 @@ public final class DriverUtils {
     }
 
     private static String startHubCommand() {
-        return String.format("cd %s && java -jar selenium-server-%s.jar hub",
-                getBrowsersDirectory(), getSeleniumServerVersion());
+        return String.format("cd %s && java -jar selenium-server-%s.jar hub --port %s",
+                getBrowsersDirectory(), getSeleniumServerVersion(), CONFIG_READER.gridPort());
     }
 
     private static String startNodeCommand() {
-        return String.format("cd %s && java -jar selenium-server-%s.jar node",
-                getBrowsersDirectory(), getSeleniumServerVersion());
+        return String.format("cd %s && java -jar selenium-server-%s.jar node --port %s",
+                getBrowsersDirectory(), getSeleniumServerVersion(), CONFIG_READER.nodePort());
     }
 
     public static void waitUntilHubIsLoaded() {

@@ -14,6 +14,6 @@ public interface ConfigReader extends Config {
     String gridPort();
 
     @Key("seleniumNodePort")
-    @DefaultValue("5555")
+    @DefaultValue("5556")
     String nodePort();
 }
