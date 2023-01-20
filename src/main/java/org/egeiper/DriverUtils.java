@@ -25,7 +25,7 @@ import static org.awaitility.Awaitility.await;
 @SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "PMD.AvoidCatchingGenericException",
         "checkstyle:ClassDataAbstractionCoupling", "checkstyle:ReturnCount"})
 public final class DriverUtils {
-// ex
+    // ex
     private static final String CHROME_PROPERTY = "webdriver.chrome.driver";
     private static final String FIREFOX_PROPERTY = "webdriver.gecko.driver";
     private static final String CONFIG_PROPERTY = "config.properties";
