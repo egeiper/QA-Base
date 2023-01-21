@@ -13,7 +13,8 @@ import java.io.ByteArrayInputStream;
 public class WebDriverListener implements ITestListener {
     @Override
     public void onTestStart(final ITestResult result) {
-        final WebDriver driver = DriverUtils.getDriver(DriverType.REMOTE, BrowserType.CHROME);
+        final WebDriver driver = WebDriverUtils
+                .getRemoteDriver(DriverType.REMOTE, BrowserType.CHROME, "localhost", "4444");
         DriverHelper.setDriver(driver);
     }
 

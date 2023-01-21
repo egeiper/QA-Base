@@ -32,23 +32,31 @@ public final class WebDriverUtils {
     private static final String FILE_DOWNLOAD_PATH = "//src//test//resources//fileDownload";
     private static final ConfigReader CONFIG_READER = ConfigFactory.create(ConfigReader.class, System.getProperties());
     private static final String DRIVER_EXCEPTION = "Cannot create driver for unknown browser type";
-    private static String HUB_URL;
+    private static String hubUrl;
 
 
 
     private WebDriverUtils() {
     }
 
-    public static WebDriver getRemoteDriver(final DriverType driverType, final BrowserType browserType, final String host, final String port) {
-        setHubUrl(host,port);
+    public static WebDriver getRemoteDriver(final DriverType driverType, final BrowserType browserType,
+                                            final String host, final String port) {
+        setHubUrl(host, port);
         if (driverType.equals(DriverType.REMOTE)) {
-            return getRemoteDriver(browserType);
+            switch (browserType) {
+                case CHROME:
+                    return new RemoteWebDriver(getRemoteURL(), getChromeOptions());
+                case FIREFOX:
+                    return new RemoteWebDriver(getRemoteURL(), getFirefoxOptions());
+                default:
+                    throw new UnknownBrowserException(DRIVER_EXCEPTION);
+            }
         } else {
             return getRemoteDriverWithHub(browserType);
         }
     }
 
-    private static WebDriver getLocalDriver(final BrowserType browserType) {
+    public static WebDriver getLocalDriver(final BrowserType browserType) {
         switch (browserType) {
             case CHROME:
                 System.setProperty(CHROME_PROPERTY, PropertyUtils.getProperty(CONFIG_PROPERTY, "chromeDriverURL"));
@@ -85,17 +93,6 @@ public final class WebDriverUtils {
         return options;
     }
 
-    private static RemoteWebDriver getRemoteDriver(final BrowserType browserType) {
-        switch (browserType) {
-            case CHROME:
-                return new RemoteWebDriver(getRemoteURL(), getChromeOptions());
-            case FIREFOX:
-                return new RemoteWebDriver(getRemoteURL(), getFirefoxOptions());
-            default:
-                throw new UnknownBrowserException(DRIVER_EXCEPTION);
-        }
-    }
-
     private static RemoteWebDriver getRemoteDriverWithHub(final BrowserType browserType) {
         startHubAndNode();
         switch (browserType) {
@@ -110,7 +107,7 @@ public final class WebDriverUtils {
 
     private static URL getRemoteURL() {
         try {
-            return new URL(HUB_URL);
+            return new URL(hubUrl);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -147,28 +144,28 @@ public final class WebDriverUtils {
                 getBrowsersDirectory(), getSeleniumServerVersion(), CONFIG_READER.nodePort());
     }
 
-    public static void waitUntilHubIsLoaded() {
+    private static void waitUntilHubIsLoaded() {
         await().atMost(60, TimeUnit.SECONDS).until(WebDriverUtils::isHubReady);
     }
 
-    public static boolean isHubUp() {
+    private static boolean isHubUp() {
         try {
-            return RestAssured.given().baseUri(HUB_URL).get().getStatusCode() == 200;
+            return RestAssured.given().baseUri(hubUrl + "/wd/hub/status").get().getStatusCode() == 200;
         } catch (Exception e) {
             return false;
         }
     }
 
-    public static boolean isHubReady() {
+    private static boolean isHubReady() {
         try {
-            return RestAssured.given().baseUri(HUB_URL).get().jsonPath().getBoolean("value.ready");
+            return RestAssured.given().baseUri(hubUrl + "/wd/hub/status").get().jsonPath().getBoolean("value.ready");
         } catch (Exception e) {
             return false;
         }
     }
 
     private static void setHubUrl(final String host, final String port) {
-        HUB_URL = "http://"+host+"/"+port+"";
+        hubUrl = "http://" + host + ":" + port + "";
     }
 }
 

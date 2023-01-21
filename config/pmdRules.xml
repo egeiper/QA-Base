@@ -76,7 +76,10 @@
     <rule ref="category/java/multithreading.xml">
         <exclude name="UseConcurrentHashMap"/>
     </rule>
-    <rule ref="category/java/performance.xml"/>
+    <rule ref="category/java/performance.xml">
+        <exclude name="AddEmptyString"/>
+    </rule>
+
     <rule ref="category/java/security.xml"/>
 
 </ruleset>
