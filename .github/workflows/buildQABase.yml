@@ -22,20 +22,10 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      - name: Download Artifacts from S3
-      - uses: keithweaver/aws-s3-github-action@v1.0.0
-        with:
-        command: cp
-        source: ./local_file.txt
-        destination: s3://yourbucket/folder/local_file.txt
-        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws_region: us-east-1
-
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
-          arguments: clean build
+          arguments: clean test
 
   allure:
     name: Generate Allure Report

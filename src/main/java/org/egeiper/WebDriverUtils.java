@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
@@ -25,9 +26,7 @@ import static org.awaitility.Awaitility.await;
 @SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "PMD.AvoidCatchingGenericException",
         "checkstyle:ClassDataAbstractionCoupling", "checkstyle:ReturnCount"})
 public final class WebDriverUtils {
-    // ex
-    private static final String CHROME_PROPERTY = "webdriver.chrome.driver";
-    private static final String FIREFOX_PROPERTY = "webdriver.gecko.driver";
+
     private static final String CONFIG_PROPERTY = "config.properties";
     private static final String FILE_DOWNLOAD_PATH = "//src//test//resources//fileDownload";
     private static final ConfigReader CONFIG_READER = ConfigFactory.create(ConfigReader.class, System.getProperties());
@@ -59,10 +58,8 @@ public final class WebDriverUtils {
     public static WebDriver getLocalDriver(final BrowserType browserType) {
         switch (browserType) {
             case CHROME:
-                System.setProperty(CHROME_PROPERTY, PropertyUtils.getProperty(CONFIG_PROPERTY, "chromeDriverURL"));
                 return new ChromeDriver(getChromeOptions());
             case FIREFOX:
-                System.setProperty(FIREFOX_PROPERTY, PropertyUtils.getProperty(CONFIG_PROPERTY, "firefoxDriverURL"));
                 return new FirefoxDriver(getFirefoxOptions());
             default:
                 throw new UnknownBrowserException(DRIVER_EXCEPTION);
@@ -70,14 +67,19 @@ public final class WebDriverUtils {
     }
 
     private static ChromeOptions getChromeOptions() {
-        final ChromeOptions options = new ChromeOptions();
-        final HashMap<String, Object> prefs = new HashMap<>();
+        final Map<String, Object> prefs = new HashMap<>();
+        prefs.put("profile.cookie_controls_mode", 0);
         prefs.put("download.prompt_for_download", false);
         prefs.put("download.default_directory", System.getProperty("user.dir")
                 + FILE_DOWNLOAD_PATH);
-        options.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
-        options.setExperimentalOption("prefs", prefs);
-        return options;
+        final ChromeOptions chromeOpts = new ChromeOptions();
+        chromeOpts.addArguments("incognito");
+        chromeOpts.addArguments("disable-features=DownloadBubble,DownloadBubbleV2");
+        chromeOpts.addArguments("--remote-allow-origins=*");
+        chromeOpts.addArguments("--disable-popup-blocking");
+        chromeOpts.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
+        chromeOpts.setExperimentalOption("prefs", prefs);
+        return chromeOpts;
     }
 
     private static FirefoxOptions getFirefoxOptions() {
@@ -165,7 +167,7 @@ public final class WebDriverUtils {
     }
 
     private static void setHubUrl(final String host, final String port) {
-        hubUrl = "http://" + host + ":" + port + "";
+        hubUrl = "http://" + host + ":" + port;
     }
 }
 
