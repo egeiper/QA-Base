@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import static org.egeiper.DriverHelper.getDriver;
+import static org.egeiper.DriverHelper.setDriver;
 import static org.testng.Assert.*;
 
 @Data
@@ -22,7 +24,6 @@ import static org.testng.Assert.*;
 public class BasePage {
 
     private static final String ERROR_MESSAGE = "Wasn't able to wait";
-    private static final String NO_MATCH_FOUND = "No match found";
     private static final String NO_SUCH_ELEMENT = "No such element";
     private static final String WEB_DRIVER_EXCEPTION = "Web driver exception";
     private static final String STALE_ELEMENT_EXCEPTION = "Element is no longer present in page";
@@ -31,17 +32,15 @@ public class BasePage {
     private static final int DEFAULT_TIMEOUT_DURATION = 20;
     private static final String DOCUMENT_READY_STATE_COMPLETE = "return document.readyState == 'complete' ";
     private static final int DEFAULT_DISPLAY_TIMEOUT = 5000;
-
-
-    private Shadow shadow;
-    private WebDriver driver;
-    private JavascriptExecutor jse;
-    private WebDriverWait wait;
-    private Actions actions;
+    
+    private final Shadow shadow;
+    private final JavascriptExecutor jse;
+    private final WebDriverWait wait;
+    private final Actions actions;
 
     public BasePage(final WebDriver driver) {
         setDriver(driver);
-        setShadow(new Shadow(driver));
+        shadow = new Shadow(getDriver());
         wait = new WebDriverWait(driver, Duration.ofSeconds(DEFAULT_TIMEOUT_DURATION));
         jse = (JavascriptExecutor) getDriver();
         actions = new Actions(driver);
